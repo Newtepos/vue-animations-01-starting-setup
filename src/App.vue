@@ -9,6 +9,12 @@
     </transition>
     <button @click="toggleParagraph">Toggle Paragraph</button>
   </div>
+  <div class="container">
+    <transition name="fade-button" mode="out-in">
+      <button @click="showUsers" v-if="!userAreVisible">Show Users</button>
+      <button @click="hideUsers" v-else>Hide Users</button>
+    </transition>
+  </div>
   <base-modal @close="hideDialog" :open="dialogIsVisible">
     <p>This is a test dialog!</p>
     <button @click="hideDialog">Close it!</button>
@@ -25,6 +31,7 @@ export default {
       dialogIsVisible: false,
       amimatedBlock: false,
       pasaIsVisible: false,
+      userAreVisible: false,
     };
   },
   methods: {
@@ -39,6 +46,12 @@ export default {
     },
     toggleParagraph() {
       this.pasaIsVisible = !this.pasaIsVisible;
+    },
+    showUsers() {
+      this.userAreVisible = true;
+    },
+    hideUsers() {
+      this.userAreVisible = false;
     },
   },
 };
@@ -92,23 +105,8 @@ button:active {
   animation: slide-fade 0.3s ease-out forwards;
 }
 
-.para-enter-from {
-  /* opacity: 0;
-  transform: translateY(-30px); */
-}
-
 .para-enter-active {
   animation: slide-scale 0.3s ease-out;
-}
-
-.para-enter-to {
-  /* opacity: 1;
-  transform: translateY(0); */
-}
-
-.para-leave-from {
-  /* opacity: 1;
-  transform: translateY(0); */
 }
 
 .para-leave-active {
@@ -116,9 +114,22 @@ button:active {
   animation: slide-scale 0.3s ease-in;
 }
 
-.para-leave-to {
-  /* opacity: 0;
-  transform: translateY(30px); */
+.fade-button-enter-from,
+.fade-button-leave-to {
+  opacity: 0;
+}
+
+.fade-button-enter-active {
+  transition: opacity 0.3s ease-out;
+}
+
+.fade-button-leave-active {
+  transition: opacity 0.3s ease-in;
+}
+
+.fade-button-enter-to,
+.fade-button-leave-from {
+  opacity: 1;
 }
 
 @keyframes slide-scale {
