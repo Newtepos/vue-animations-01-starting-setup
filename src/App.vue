@@ -12,6 +12,8 @@
       @after-enter="afterEnter"
       @leave="leave"
       @after-leave="afterLeave"
+      @enter-cancelled="enterCancelled"
+      @leave-cancelled="leaveCancelled"
     >
       <p v-if="pasaIsVisible">This is only sometime visible</p>
     </transition>
@@ -40,33 +42,66 @@ export default {
       amimatedBlock: false,
       pasaIsVisible: false,
       userAreVisible: false,
+      enterInterval: null,
+      leaveInterval: null,
     };
   },
   methods: {
+    enterCancelled() {
+      clearInterval(this.enterInterval);
+    },
+    leaveCancelled() {
+      clearInterval(this.leaveInterval);
+    },
     beforeEnter(el) {
       console.log('Before Enter!');
       console.log(el);
+      el.style.opacity = 0;
     },
+    enter(el, done) {
+      console.log('Enter!');
+      console.log(el);
+      let round = 1;
+      this.enterInterval = setInterval(() => {
+        el.style.opacity = round * 0.01;
+        round++;
+        if (round > 100) {
+          clearInterval(this.enterInterval);
+          done();
+        }
+      }, 20);
+    },
+
     afterEnter(el) {
       console.log('After Enter!');
       console.log(el);
     },
-    enter(el) {
-      console.log('Enter!');
+
+    beforeLeave(el) {
+      console.log('Before Leave!');
       console.log(el);
+      el.style.opacity = 1;
     },
+
+    leave(el, done) {
+      console.log('Leave!');
+      console.log(el);
+      let round = 1;
+      this.leaveCancelled = setInterval(() => {
+        el.style.opacity = 1 - round * 0.01;
+        round++;
+        if (round > 100) {
+          clearInterval(this.leaveCancelled);
+          done();
+        }
+      }, 20);
+    },
+
     afterLeave(el) {
       console.log('After Leave!');
       console.log(el);
     },
-    leave(el) {
-      console.log('Leave!');
-      console.log(el);
-    },
-    beforeLeave(el) {
-      console.log('Before Leave!');
-      console.log(el);
-    },
+
     showDialog() {
       this.dialogIsVisible = true;
     },
@@ -135,15 +170,6 @@ button:active {
 .animate {
   /* transform: translateX(-150px); */
   animation: slide-fade 0.3s ease-out forwards;
-}
-
-.para-enter-active {
-  animation: slide-scale 2s ease-out;
-}
-
-.para-leave-active {
-  /* transition: all 0.3s ease-in; */
-  animation: slide-scale 0.3s ease-in;
 }
 
 .fade-button-enter-from,
